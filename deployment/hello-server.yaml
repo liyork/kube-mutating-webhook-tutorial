@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloserver
+  namespace: injection
+  labels:
+    app: helloserver
+spec:
+  ports:
+    - port: 5000
+      name: http
+  selector:
+    app: helloserver
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello-server-v1
+  namespace: injection
+  labels:
+    version: v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloserver
+        version: v1
+      annotations:
+        sidecar-injector-webhook.morven.me/inject: "yes"
+    spec:
+      containers:
+        - name: hello-server
+          image: xxx/qqq/hello-server:v1
+          resources:
+            requests:
+              cpu: "100m"
+          imagePullPolicy: Always #Always
+          ports:
+            - containerPort: 5000
+
+
